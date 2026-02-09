@@ -1,0 +1,113 @@
+.star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.star-rating .star {
+    cursor: default;
+    transition: all 0.2s ease;
+    font-size: 24px;
+    line-height: 1;
+}
+
+/* Size variants */
+.star-rating.small .star {
+    font-size: 16px;
+}
+
+.star-rating.medium .star {
+    font-size: 24px;
+}
+
+.star-rating.large .star {
+    font-size: 32px;
+}
+
+/* Interactive mode */
+.star-rating.interactive .star {
+    cursor: pointer;
+}
+
+.star-rating.interactive .star:hover {
+    transform: scale(1.2);
+}
+
+/* Star states */
+.star.filled {
+    color: #fbbf24;
+    /* Gold */
+}
+
+.star.half-filled {
+    color: #fbbf24;
+    position: relative;
+}
+
+.star.half-filled::before {
+    content: '★';
+    position: absolute;
+    left: 0;
+    width: 50%;
+    overflow: hidden;
+    color: #fbbf24;
+}
+
+.star.empty {
+    color: #d1d5db;
+    /* Gray */
+}
+
+/* Rating value (for readonly mode) */
+.rating-value {
+    margin-left: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Dark mode support */
+[data-theme="dark"] .star.empty {
+    color: #4b5563;
+}
+
+/* Hover effects */
+.star-rating.interactive .star:hover,
+.star-rating.interactive .star:hover~.star {
+    transform: scale(1.1);
+}
+
+/* Animation */
+.star {
+    animation: starPop 0.3s ease;
+}
+
+@keyframes starPop {
+    0% {
+        transform: scale(0.8);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Accessibility */
+.star-rating.readonly .star {
+    pointer-events: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .star-rating.large .star {
+        font-size: 28px;
+    }
+
+    .star-rating.medium .star {
+        font-size: 20px;
+    }
+}

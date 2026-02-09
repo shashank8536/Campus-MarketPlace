@@ -1,0 +1,84 @@
+.message-bubble {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    max-width: 65%;
+    width: fit-content;
+    word-wrap: break-word;
+    animation: slideIn 0.15s ease-out;
+    display: inline-block;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-bubble.sent {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
+}
+
+.message-bubble.received {
+    background: white;
+    color: #303030;
+    margin-right: auto;
+    border-bottom-left-radius: 2px;
+    border: 1px solid #e0e0e0;
+}
+
+.message-sender {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    opacity: 0.9;
+}
+
+.message-bubble.sent .message-sender {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.message-bubble.received .message-sender {
+    color: #667eea;
+}
+
+.message-content {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.message-bubble.sent .message-content {
+    color: white;
+}
+
+.message-bubble.received .message-content {
+    color: #303030;
+}
+
+.message-time {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    text-align: right;
+    margin-top: 2px;
+    display: block;
+}
+
+.message-bubble.sent .message-time {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.message-bubble.received .message-time {
+    color: #667781;
+}
