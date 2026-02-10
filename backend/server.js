@@ -20,11 +20,22 @@ const server = http.createServer(app);
 connectDB();
 
 // Middleware
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://gla-marketplace.netlify.app'
+];
+
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'https://gla-marketplace.netlify.app'
-    ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
@@ -42,6 +53,7 @@ const sessionMiddleware = session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-origin cookies
         maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
 });
