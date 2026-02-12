@@ -5,7 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 
 // Import routes
 const authRoutes = require('./routes/auth');
