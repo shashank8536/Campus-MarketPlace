@@ -26,7 +26,7 @@ export const SocketProvider = ({ children }) => {
     // Initialize socket connection when user is authenticated
     useEffect(() => {
         if (user) {
-            const newSocket = io('http://localhost:5000', {
+            const newSocket = io(import.meta.env.VITE_API_URL, {
                 withCredentials: true,
                 autoConnect: true
             });
@@ -34,9 +34,9 @@ export const SocketProvider = ({ children }) => {
             newSocket.on('connect', () => {
                 console.log('Socket connected:', newSocket.id);
                 setIsConnected(true);
-                // Authenticate with userId
                 newSocket.emit('authenticate', user._id);
             });
+
 
             newSocket.on('disconnect', () => {
                 console.log('Socket disconnected');
