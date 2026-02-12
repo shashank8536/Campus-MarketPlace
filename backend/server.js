@@ -5,6 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
+const MongoStore = require('connect-mongo');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -47,14 +48,18 @@ app.use('/uploads', express.static('uploads'));
 
 // Session configuration
 const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        collectionName: 'sessions'
+    }),
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-origin cookies
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+        sameSite: 'none',
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
 });
 
