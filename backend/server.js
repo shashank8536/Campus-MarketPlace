@@ -15,6 +15,8 @@ const reviewRoutes = require('./routes/reviews');
 const messageRoutes = require('./routes/messages');
 
 const app = express();
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
 
 // Connect to MongoDB
