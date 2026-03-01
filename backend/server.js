@@ -58,9 +58,9 @@ const sessionMiddleware = session({
         collectionName: 'sessions'
     }),
     cookie: {
-        secure: true,
+        secure: process.env.NODE_ENV === 'production', // Only require HTTPS in production
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'lax' for localhost
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 });
@@ -160,6 +160,14 @@ io.on('connection', (socket) => {
                 senderId: userId,
                 receiverId,
                 socketId: socket.id
+            });
+
+            // DEBUG: Log full message content
+            console.log('🔍 FULL MESSAGE CONTENT:', {
+                length: content?.length,
+                fullContent: content,
+                firstChar: content?.[0],
+                charCode: content?.[0]?.charCodeAt(0)
             });
 
             if (!userId) {
@@ -269,6 +277,35 @@ io.on('connection', (socket) => {
 
         } catch (error) {
             console.error('Error marking as read:', error);
+        }
+    });
+
+    // Handle buyer interest notification
+    socket.on('buyer_interest', (data) => {
+        try {
+            const { sellerId, buyerId, buyerName, listingId, listingTitle, listingType } = data;
+
+            console.log('💎 Buyer interest received:', {
+                sellerId,
+                buyerId,
+                buyerName,
+                listingTitle
+            });
+
+            // Send notification to seller's personal room
+            io.to(`user:${sellerId}`).emit('buyer_interest_notification', {
+                buyerId,
+                buyerName,
+                listingId,
+                listingTitle,
+                listingType,
+                timestamp: new Date()
+            });
+
+            console.log(`✅ Notification sent to seller: ${sellerId}`);
+
+        } catch (error) {
+            console.error('❌ Error handling buyer interest:', error);
         }
     });
 

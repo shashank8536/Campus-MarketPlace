@@ -128,12 +128,21 @@
 }
 
 .listing-price .price {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 900;
+    color: #fff;
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    padding: 0.5rem 1.25rem;
+    border-radius: 12px;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    letter-spacing: -0.5px;
+    transition: all 0.3s ease;
+}
+
+.listing-card:hover .listing-price .price {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
 }
 
 .exchange-label {

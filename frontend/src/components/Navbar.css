@@ -75,6 +75,10 @@
   position: relative;
 }
 
+.nav-link:first-child {
+  margin-left: 2.5rem;
+}
+
 .nav-link::after {
   content: '';
   position: absolute;

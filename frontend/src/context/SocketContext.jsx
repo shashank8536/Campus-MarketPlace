@@ -26,13 +26,22 @@ export const SocketProvider = ({ children }) => {
     // Initialize socket connection when user is authenticated
     useEffect(() => {
         if (user) {
-            const newSocket = io(import.meta.env.VITE_API_URL, {
+            // Determine correct socket server URL
+            // Use localhost for development, deployed URL for production
+            const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+            console.log('🔌 Connecting to Socket.io server:', socketUrl);
+
+            const newSocket = io(socketUrl, {
                 withCredentials: true,
-                autoConnect: true
+                autoConnect: true,
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
             });
 
             newSocket.on('connect', () => {
-                console.log('Socket connected:', newSocket.id);
+                console.log('✅ Socket connected:', newSocket.id);
                 setIsConnected(true);
                 newSocket.emit('authenticate', user._id);
             });
@@ -52,6 +61,25 @@ export const SocketProvider = ({ children }) => {
                 console.log('New message notification:', data);
                 // Update unread count
                 setUnreadCount(prev => prev + 1);
+            });
+
+            // Listen for buyer interest notifications
+            newSocket.on('buyer_interest_notification', (data) => {
+                console.log('💎 Buyer interest notification:', data);
+
+                const { buyerName, listingTitle, listingType } = data;
+
+                // Show browser notification
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(`🎉 Interest in your ${listingType}!`, {
+                        body: `${buyerName} is interested in "${listingTitle}"`,
+                        icon: '/favicon.ico',
+                        tag: 'buyer-interest'
+                    });
+                }
+
+                // Show alert (you can replace with a toast notification later)
+                alert(`🎉 ${buyerName} is interested in your ${listingType}: "${listingTitle}"!`);
             });
 
             setSocket(newSocket);

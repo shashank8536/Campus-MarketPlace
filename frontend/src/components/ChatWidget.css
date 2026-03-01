@@ -94,6 +94,14 @@
 
 .close-widget {
     font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.45) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+    color: #ffffff !important;
+}
+
+.close-widget:hover {
+    background: rgba(220, 38, 38, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* Responsive */

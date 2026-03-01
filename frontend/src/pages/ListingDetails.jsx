@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import apiClient, { apiUrl } from '../config/api';
+import API_BASE_URL, { apiUrl } from '../config/api';
 import ProposeExchange from '../components/ProposeExchange';
 import './ListingDetails.css';
 
 const ListingDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
-    const { openChatWidget } = useSocket();
+    const { openChatWidget, socket } = useSocket();
     const navigate = useNavigate();
     const [listing, setListing] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -113,6 +113,32 @@ const ListingDetails = () => {
         }
     };
 
+    // Add buyer interest notification function
+    const handleShowInterest = () => {
+        if (!user) {
+            alert('Please login to show interest');
+            navigate('/login');
+            return;
+        }
+
+        if (socket && socket.connected) {
+            // Emit interest notification to seller
+            socket.emit('buyer_interest', {
+                sellerId: listing.seller._id,
+                buyerId: user._id,
+                buyerName: user.name,
+                listingId: listing._id,
+                listingTitle: listing.title,
+                listingType: listing.type
+            });
+
+            console.log('✨ Interest notification sent to seller');
+        }
+
+        // Also start the chat
+        handleStartChat();
+    };
+
     const handleMarkStatus = async (status) => {
         try {
             const response = await fetch(`/api/listings/${id}/status`, {
@@ -140,6 +166,13 @@ const ListingDetails = () => {
         }
     };
 
+    // Fix image URL to use backend server
+    const getImageUrl = (imageUrl) => {
+        if (!imageUrl) return 'https://via.placeholder.com/600x400?text=No+Image';
+        if (imageUrl.startsWith('http')) return imageUrl;
+        return `${API_BASE_URL}${imageUrl}`;
+    };
+
     if (loading) return <div className="loading">Loading...</div>;
     if (!listing) return <div className="error">Listing not found</div>;
 
@@ -160,7 +193,7 @@ const ListingDetails = () => {
                         {listing.images && listing.images.length > 0 ? (
                             <>
                                 <img
-                                    src={apiUrl(listing.images[currentImageIndex].url)}
+                                    src={getImageUrl(listing.images[currentImageIndex].url)}
                                     alt={listing.title}
                                     className="details-image"
                                     onError={(e) => {
@@ -199,7 +232,7 @@ const ListingDetails = () => {
                             </>
                         ) : (
                             <img
-                                src={apiUrl(listing.imageUrl) || 'https://via.placeholder.com/600x400?text=No+Image'}
+                                src={getImageUrl(listing.imageUrl)}
                                 alt={listing.title}
                                 className="details-image"
                             />
@@ -246,9 +279,9 @@ const ListingDetails = () => {
 
                             {!isOwner && listing.status === 'available' && (
                                 <div className="action-buttons">
-                                    {/* Message Seller Button - Always show for non-owners */}
+                                    {/* Message Seller Button - Now with interest notification */}
                                     <button
-                                        onClick={handleStartChat}
+                                        onClick={handleShowInterest}
                                         className="btn btn-primary contact-btn"
                                         disabled={startingChat}
                                     >

@@ -185,18 +185,19 @@
 
 .price-section {
     padding: 1.5rem;
-    background: rgba(139, 92, 246, 0.1);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
     border-radius: 12px;
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .price-large {
     font-size: 3rem;
     font-weight: 900;
-    background: linear-gradient(135deg, #8b5cf6, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #fff;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    letter-spacing: -1px;
+    display: inline-block;
 }
 
 .exchange-label-large {

@@ -1,14 +1,18 @@
 .message-bubble {
     margin-bottom: 8px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 8px;
-    max-width: 65%;
+    max-width: 75%;
+    min-width: 120px;
     width: fit-content;
     word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
     animation: slideIn 0.15s ease-out;
-    display: inline-block;
+    display: block;
     position: relative;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
 @keyframes slideIn {
@@ -27,15 +31,19 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     margin-left: auto;
+    margin-right: 0;
     border-bottom-right-radius: 2px;
+    align-self: flex-end;
 }
 
 .message-bubble.received {
     background: white;
     color: #303030;
     margin-right: auto;
+    margin-left: 0;
     border-bottom-left-radius: 2px;
     border: 1px solid #e0e0e0;
+    align-self: flex-start;
 }
 
 .message-sender {
@@ -54,9 +62,12 @@
 }
 
 .message-content {
-    font-size: 0.9rem;
-    line-height: 1.3;
+    font-size: 0.95rem;
+    line-height: 1.4;
     margin-bottom: 2px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .message-bubble.sent .message-content {
