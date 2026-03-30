@@ -43,10 +43,6 @@ const Navbar = () => {
                         <span className="logo-icon">🎓</span>
                         Campus Marketplace
                     </Link>
-                    <div className="verified-badge">
-                        <span className="verified-icon">✓</span>
-                        Verified Campus Listings
-                    </div>
                 </div>
 
                 <div className="navbar-links">
@@ -73,7 +69,7 @@ const Navbar = () => {
                         </>
                     ) : (
                         <>
-                            <Link to="/login" className="btn btn-outline">Login</Link>
+                            <Link to="/login" className="btn btn-text">Login</Link>
                             <Link to="/register" className="btn btn-primary">Sign Up</Link>
                         </>
                     )}

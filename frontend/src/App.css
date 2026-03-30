@@ -29,6 +29,7 @@
     --card-bg: rgba(255, 255, 255, 0.95);
     --input-bg: #f7fafc;
     --input-border: #e2e8f0;
+    --bg-gradient: linear-gradient(to bottom, #f8f9ff 0%, #ffffff 100%);
 }
 
 :root[data-theme="dark"] {
@@ -55,17 +56,19 @@
     --card-bg: rgba(15, 23, 42, 0.95);
     --input-bg: rgba(30, 41, 59, 0.5);
     --input-border: rgba(148, 163, 184, 0.2);
+    --bg-gradient: linear-gradient(to bottom, #111827 0%, #1a1a2e 100%);
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-primary);
+    background: var(--bg-gradient);
+    background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
     overflow-y: scroll;
     /* Always reserve scrollbar space to prevent layout shift */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .app {
@@ -115,6 +118,18 @@ body {
 .btn-outline:hover:not(:disabled) {
     background: var(--input-bg);
     border-color: var(--border-hover);
+}
+
+.btn-text {
+    background: transparent;
+    border: none;
+    color: var(--accent-primary);
+    box-shadow: none;
+}
+
+.btn-text:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.1);
+    transform: translateY(-1px);
 }
 
 .btn-danger {

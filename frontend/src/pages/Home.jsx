@@ -134,6 +134,13 @@ const Home = () => {
                 <h1 className="hero-title">Campus Marketplace</h1>
                 <p className="hero-subtitle">Buy, Sell, and Exchange within your campus community</p>
 
+                <div className="hero-badge-container">
+                    <div className="verified-badge hero-badge">
+                        <span className="verified-icon">✓</span>
+                        Verified Campus Listings
+                    </div>
+                </div>
+
                 <div className="search-bar">
                     <input
                         type="text"
