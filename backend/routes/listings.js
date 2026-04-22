@@ -11,7 +11,11 @@ const path = require('path');
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const { type, search, category, minPrice, maxPrice, sortBy } = req.query;
+        const { type, search, category, minPrice, maxPrice, sortBy, page = 1, limit = 12 } = req.query;
+
+        const pageNum = Math.max(1, parseInt(page));
+        const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
+        const skip = (pageNum - 1) * limitNum;
 
         let query = { isActive: true };
 
@@ -50,11 +54,26 @@ router.get('/', async (req, res) => {
             sort = { viewCount: -1 };
         }
 
-        const listings = await Listing.find(query)
-            .populate('seller', 'name email campusId')
-            .sort(sort);
+        // Run count and data query in parallel for speed
+        const [total, listings] = await Promise.all([
+            Listing.countDocuments(query),
+            Listing.find(query)
+                .populate('seller', 'name email campusId')
+                .sort(sort)
+                .skip(skip)
+                .limit(limitNum)
+                .lean()
+        ]);
 
-        res.json({ success: true, count: listings.length, data: listings });
+        res.json({
+            success: true,
+            count: listings.length,
+            total,
+            page: pageNum,
+            totalPages: Math.ceil(total / limitNum),
+            hasMore: skip + listings.length < total,
+            data: listings
+        });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }

@@ -1,10 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { apiUrl } from '../config/api';
 import ListingCard from '../components/ListingCard';
 import FilterPanel from '../components/FilterPanel';
 import PostItemForm from '../components/PostItemForm';
 import './Home.css';
+
+// Debounce hook
+function useDebounce(value, delay) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => clearTimeout(handler);
+    }, [value, delay]);
+
+    return debouncedValue;
+}
 
 const Home = () => {
     const { user } = useAuth();
@@ -20,24 +35,45 @@ const Home = () => {
     const [showPostForm, setShowPostForm] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
 
+    // Debounce search input by 400ms
+    const debouncedSearch = useDebounce(searchTerm, 400);
+
+    // Reset to page 1 when filters or search change
     useEffect(() => {
-        fetchListings();
-    }, [activeFilter, searchTerm, filters]);
+        setPage(1);
+        setListings([]);
+    }, [activeFilter, debouncedSearch, filters]);
 
-    const fetchListings = async () => {
+    // Fetch listings whenever page, filter, or debounced search changes
+    useEffect(() => {
+        fetchListings(page);
+    }, [page, activeFilter, debouncedSearch, filters]);
+
+    const fetchListings = async (pageNum) => {
         try {
-            setLoading(true);
+            if (pageNum === 1) {
+                setLoading(true);
+            } else {
+                setLoadingMore(true);
+            }
 
             // Build query params
             const params = new URLSearchParams();
+
+            params.append('page', pageNum);
+            params.append('limit', 12);
 
             if (activeFilter !== 'all') {
                 params.append('type', activeFilter);
             }
 
-            if (searchTerm) {
-                params.append('search', searchTerm);
+            if (debouncedSearch) {
+                params.append('search', debouncedSearch);
             }
 
             if (filters.category && filters.category !== 'All') {
@@ -60,13 +96,24 @@ const Home = () => {
             const data = await response.json();
 
             if (data.success) {
-                setListings(data.data);
+                if (pageNum === 1) {
+                    setListings(data.data);
+                } else {
+                    setListings(prev => [...prev, ...data.data]);
+                }
+                setHasMore(data.hasMore);
+                setTotalCount(data.total);
             }
         } catch (error) {
             console.error('Error fetching listings:', error);
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
+    };
+
+    const handleLoadMore = () => {
+        setPage(prev => prev + 1);
     };
 
     const handleFilterChange = (key, value) => {
@@ -84,7 +131,9 @@ const Home = () => {
     };
 
     const handlePostSuccess = (newListing) => {
-        fetchListings(); // Refresh listings
+        setPage(1);
+        setListings([]);
+        fetchListings(1); // Refresh listings
     };
 
     const getActiveFiltersCount = () => {
@@ -212,13 +261,28 @@ const Home = () => {
                 ) : (
                     <>
                         <div className="results-count">
-                            Found {listings.length} item{listings.length !== 1 ? 's' : ''}
+                            Showing {listings.length} of {totalCount} item{totalCount !== 1 ? 's' : ''}
                         </div>
                         <div className="listings-grid">
                             {listings.map(listing => (
                                 <ListingCard key={listing._id} listing={listing} />
                             ))}
                         </div>
+                        {hasMore && (
+                            <div className="load-more-container">
+                                <button
+                                    className="btn btn-load-more"
+                                    onClick={handleLoadMore}
+                                    disabled={loadingMore}
+                                >
+                                    {loadingMore ? (
+                                        <>Loading... ⏳</>
+                                    ) : (
+                                        <>Load More Items 📦</>
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </>
                 )}
             </div>
@@ -260,3 +324,4 @@ const Home = () => {
 };
 
 export default Home;
+

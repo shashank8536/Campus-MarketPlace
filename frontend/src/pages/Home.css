@@ -356,6 +356,40 @@
     font-size: 1.05rem;
 }
 
+/* Load More Button */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.btn-load-more {
+    padding: 0.9rem 2.5rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.btn-load-more:hover:not(:disabled) {
+    background: var(--accent-gradient);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    transform: translateY(-2px);
+}
+
+.btn-load-more:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @media (max-width: 1024px) {
     .main-content {
         grid-template-columns: 1fr;
@@ -363,52 +397,143 @@
 }
 
 @media (max-width: 768px) {
+    .hero-section {
+        padding: 1.25rem 1rem 1.5rem;
+    }
+
     .hero-title {
         font-size: 1.6rem;
     }
 
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-badge-container {
+        margin-bottom: 1.25rem;
+    }
+
+    .search-bar {
+        max-width: 100%;
+    }
+
+    .search-input {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .content-section {
+        padding: 1rem;
     }
 
     .section-header {
         flex-direction: column;
         align-items: stretch;
+        gap: 0.75rem;
     }
 
+    /* Filter tabs: wrap instead of scroll */
     .filter-tabs {
-        justify-content: flex-start;
-        padding: 0 0.5rem 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        overflow-x: visible;
+        padding-bottom: 0;
     }
 
     .filter-tab {
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
+        padding: 0.55rem 1rem;
+        font-size: 0.82rem;
+        border-radius: 25px;
+        flex-shrink: 0;
     }
 
     .header-actions {
         width: 100%;
+        display: flex;
+        gap: 0.5rem;
     }
 
     .header-actions .btn {
         flex: 1;
+        text-align: center;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .results-count {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.85rem;
+        margin-bottom: 1rem;
     }
 
     .listings-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 1.25rem;
     }
 
     .modal-content {
         width: 95%;
         max-height: 95vh;
+        border-radius: 16px;
     }
 
     .modal-header-custom {
-        padding: 1.5rem;
+        padding: 1.25rem 1.5rem;
     }
 
     .modal-header-custom h2 {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
+    }
+
+    .modal-actions {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .load-more-container {
+        margin-top: 1.5rem;
+    }
+
+    .btn-load-more {
+        padding: 0.8rem 2rem;
+        font-size: 0.9rem;
+        width: 100%;
     }
 }
+
+/* Extra small phones */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.4rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .filter-tabs {
+        gap: 0.4rem;
+    }
+
+    .filter-tab {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.78rem;
+    }
+
+    .content-section {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-title {
+        font-size: 1.25rem;
+    }
+
+    .filter-tab {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.75rem;
+    }
+}
+

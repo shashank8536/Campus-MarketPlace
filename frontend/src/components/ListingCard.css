@@ -224,15 +224,73 @@
         max-width: 100%;
     }
 
+    .listing-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+
     .listing-image-container {
-        height: 200px;
+        height: 180px;
+    }
+
+    .listing-content {
+        padding: 1rem;
+    }
+
+    .listing-category {
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
     }
 
     .listing-title {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .listing-description {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .listing-footer {
+        padding-top: 1rem;
     }
 
     .listing-price .price {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
+        padding: 0.4rem 1rem;
+    }
+
+    .seller-name {
+        font-size: 0.8rem;
+    }
+
+    .type-badge {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.7rem;
+    }
+
+    .campus-badge {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.7rem;
     }
 }
+
+@media (max-width: 480px) {
+    .listing-image-container {
+        height: 160px;
+    }
+
+    .listing-content {
+        padding: 0.85rem;
+    }
+
+    .listing-title {
+        font-size: 1rem;
+    }
+
+    .listing-price .price {
+        font-size: 1.2rem;
+        padding: 0.35rem 0.85rem;
+    }
+}

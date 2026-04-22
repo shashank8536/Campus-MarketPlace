@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useSocket } from '../context/SocketContext';
@@ -11,6 +11,23 @@ const Navbar = () => {
     const { theme, toggleTheme } = useTheme();
     const { unreadCount } = useSocket();
     const [pendingCount, setPendingCount] = useState(0);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
+
+    // Close menu on route change
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location]);
+
+    // Prevent body scroll when menu is open
+    useEffect(() => {
+        if (menuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [menuOpen]);
 
     useEffect(() => {
         if (user) {
@@ -45,7 +62,24 @@ const Navbar = () => {
                     </Link>
                 </div>
 
-                <div className="navbar-links">
+                {/* Hamburger button — visible only on mobile */}
+                <button
+                    className={`hamburger ${menuOpen ? 'open' : ''}`}
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                {/* Overlay for mobile menu */}
+                {menuOpen && (
+                    <div className="menu-overlay" onClick={() => setMenuOpen(false)} />
+                )}
+
+                {/* Navigation links */}
+                <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
                     <Link to="/" className="nav-link">Browse</Link>
 
                     <button onClick={toggleTheme} className="theme-toggle" title="Toggle theme">
@@ -80,4 +114,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

@@ -71,4 +71,13 @@ const listingSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Indexes for faster queries
+listingSchema.index({ isActive: 1, type: 1, category: 1, createdAt: -1 });
+listingSchema.index({ isActive: 1, createdAt: -1 });
+listingSchema.index({ seller: 1, isActive: 1 });
+listingSchema.index({ price: 1 });
+listingSchema.index({ viewCount: -1 });
+// Text index for search
+listingSchema.index({ title: 'text', description: 'text' });
+
 module.exports = mongoose.model('Listing', listingSchema);
