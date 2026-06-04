@@ -96,9 +96,6 @@ const io = new Server(server, {
     }
 });
 
-// Store online users (socketId -> userId mapping)
-const onlineUsers = new Map();
-
 // Wrap express session middleware for Socket.io
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
@@ -115,7 +112,6 @@ io.on('connection', (socket) => {
 
     if (userId) {
         socket.userId = userId;
-        onlineUsers.set(socket.id, userId);
         console.log(`✅ User ${userId} authenticated from session with socket ${socket.id}`);
 
         // Join user to their personal room
@@ -128,7 +124,6 @@ io.on('connection', (socket) => {
     socket.on('authenticate', (authenticateUserId) => {
         if (authenticateUserId && !socket.userId) {
             socket.userId = authenticateUserId;
-            onlineUsers.set(socket.id, authenticateUserId);
             console.log(`✅ User ${authenticateUserId} manually authenticated with socket ${socket.id}`);
 
             // Join user to their personal room
@@ -237,17 +232,6 @@ io.on('connection', (socket) => {
             socket.emit('error', { message: 'Failed to send message' });
         }
     });
-
-
-    // Typing indicator
-    socket.on('typing', (data) => {
-        const { conversationId, isTyping } = data;
-        socket.to(`conversation:${conversationId}`).emit('user_typing', {
-            userId: socket.userId,
-            isTyping
-        });
-    });
-
     // Mark messages as read
     socket.on('mark_read', async (data) => {
         try {
@@ -311,11 +295,6 @@ io.on('connection', (socket) => {
 
     // Handle disconnect
     socket.on('disconnect', () => {
-        const userId = onlineUsers.get(socket.id);
-        if (userId) {
-            onlineUsers.delete(socket.id);
-            console.log(`User ${userId} disconnected`);
-        }
         console.log('Socket disconnected:', socket.id);
     });
 });
