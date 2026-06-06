@@ -56,7 +56,7 @@ router.post('/', protect, async (req, res) => {
             if (exchange && exchange.status === 'accepted') {
                 // Verify user was part of the exchange
                 if (exchange.requester.toString() === req.user._id.toString() ||
-                    exchange.requestedFrom.toString() === req.user._id.toString()) {
+                    exchange.requestedItemOwner.toString() === req.user._id.toString()) {
                     hasTransaction = true;
                 }
             }

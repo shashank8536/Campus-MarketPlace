@@ -238,7 +238,7 @@ router.post('/', protect, upload.array('images', 5), async (req, res) => {
 // @route   PUT /api/listings/:id
 // @desc    Update a listing
 // @access  Private
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, upload.array('images', 5), async (req, res) => {
     try {
         let listing = await Listing.findById(req.params.id);
 
@@ -251,25 +251,55 @@ router.put('/:id', protect, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Not authorized to update this listing' });
         }
 
-        const { title, description, type, price, category, imageUrl, isActive, status } = req.body;
+        const { title, description, type, price, category, isActive, status } = req.body;
+
+        const updateData = {
+            title,
+            description,
+            type,
+            price: type === 'exchange' ? null : price,
+            category,
+            isActive: isActive !== undefined ? isActive : listing.isActive,
+            status: status || listing.status
+        };
+
+        // If new images were uploaded, process them
+        if (req.files && req.files.length > 0) {
+            const images = req.files.map(file => ({
+                filename: file.filename,
+                url: `/uploads/${file.filename}`
+            }));
+            updateData.images = images;
+            updateData.imageUrl = images[0].url;
+
+            // Optionally: delete old images from disk
+            if (listing.images && listing.images.length > 0) {
+                listing.images.forEach(img => {
+                    if (img.filename) {
+                        fs.unlink(path.join(__dirname, '..', 'uploads', img.filename), err => {
+                            if (err) console.error('Error deleting old image:', err);
+                        });
+                    }
+                });
+            }
+        }
 
         listing = await Listing.findByIdAndUpdate(
             req.params.id,
-            {
-                title,
-                description,
-                type,
-                price: type === 'exchange' ? null : price,
-                category,
-                imageUrl,
-                isActive,
-                status: status || listing.status
-            },
+            updateData,
             { new: true, runValidators: true }
         ).populate('seller', 'name email campusId phoneNumber gender');
 
         res.json({ success: true, data: listing });
     } catch (error) {
+        // Clean up uploaded files if listing update fails
+        if (req.files) {
+            req.files.forEach(file => {
+                fs.unlink(file.path, err => {
+                    if (err) console.error('Error deleting file:', err);
+                });
+            });
+        }
         res.status(400).json({ success: false, message: error.message });
     }
 });

@@ -18,7 +18,7 @@ const sendVerificationEmail = async (email, token, userName) => {
     try {
         const transporter = createTransporter();
 
-        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
 
         const mailOptions = {
             from: `"${process.env.SMTP_FROM_NAME || 'Campus Marketplace'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,

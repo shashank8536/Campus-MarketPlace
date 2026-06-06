@@ -41,7 +41,7 @@ router.post('/register', async (req, res) => {
 
         // Send verification email
         try {
-            const emailResult = await sendVerificationEmail(email, name, verificationToken);
+            const emailResult = await sendVerificationEmail(email, verificationToken, name);
 
             // Log preview URL in development
             if (emailResult.previewUrl) {
@@ -179,7 +179,7 @@ router.post('/resend-verification', async (req, res) => {
 
         // Send verification email
         try {
-            const emailResult = await sendVerificationEmail(email, user.name, verificationToken);
+            const emailResult = await sendVerificationEmail(email, verificationToken, user.name);
 
             if (emailResult.previewUrl) {
                 console.log('\n🔗 Email Preview URL:', emailResult.previewUrl);

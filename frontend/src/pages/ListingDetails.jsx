@@ -141,7 +141,7 @@ const ListingDetails = () => {
 
     const handleMarkStatus = async (status) => {
         try {
-            const response = await fetch(`/api/listings/${id}/status`, {
+            const response = await fetch(apiUrl(`/api/listings/${id}/status`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
