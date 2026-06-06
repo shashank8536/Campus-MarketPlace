@@ -245,6 +245,64 @@
     margin-top: 1.5rem;
 }
 
+.contact-details-section {
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.06) 0%, rgba(118, 75, 162, 0.06) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    border-radius: 12px;
+}
+
+.contact-details-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.contact-info-exchange {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.contact-item-exchange {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.contact-item-exchange .contact-label {
+    font-weight: 600;
+    color: #555;
+    min-width: 80px;
+}
+
+.contact-item-exchange a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.contact-item-exchange a:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+.contact-item-exchange.privacy-note {
+    background: rgba(16, 185, 129, 0.08);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #10b981;
+}
+
+.contact-item-exchange.privacy-note span {
+    color: #065f46;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .exchange-items {

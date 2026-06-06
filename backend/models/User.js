@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please add a campus ID'],
         trim: true
     },
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other'],
+        default: 'other'
+    },
     phoneNumber: {
         type: String,
         trim: true,

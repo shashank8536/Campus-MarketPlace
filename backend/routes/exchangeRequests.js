@@ -62,10 +62,10 @@ router.post('/', protect, async (req, res) => {
 
         // Populate and return
         const populatedRequest = await ExchangeRequest.findById(exchangeRequest._id)
-            .populate('requester', 'name email campusId')
+            .populate('requester', 'name email campusId gender')
             .populate('requestedItem')
             .populate('offeredItem')
-            .populate('requestedItemOwner', 'name email');
+            .populate('requestedItemOwner', 'name email gender');
 
         res.status(201).json({
             success: true,
@@ -90,15 +90,24 @@ router.get('/received', protect, async (req, res) => {
         }
 
         const requests = await ExchangeRequest.find(filter)
-            .populate('requester', 'name email campusId phoneNumber')
+            .populate('requester', 'name email campusId phoneNumber gender')
             .populate('requestedItem')
             .populate('offeredItem')
             .sort({ createdAt: -1 });
 
+        // Strip phoneNumber for female users (safety feature)
+        const sanitizedRequests = requests.map(req => {
+            const obj = req.toObject();
+            if (obj.requester && obj.requester.gender === 'female') {
+                delete obj.requester.phoneNumber;
+            }
+            return obj;
+        });
+
         res.json({
             success: true,
-            count: requests.length,
-            data: requests
+            count: sanitizedRequests.length,
+            data: sanitizedRequests
         });
     } catch (error) {
         console.error('Get received requests error:', error);
@@ -119,15 +128,24 @@ router.get('/sent', protect, async (req, res) => {
         }
 
         const requests = await ExchangeRequest.find(filter)
-            .populate('requestedItemOwner', 'name email campusId phoneNumber')
+            .populate('requestedItemOwner', 'name email campusId phoneNumber gender')
             .populate('requestedItem')
             .populate('offeredItem')
             .sort({ createdAt: -1 });
 
+        // Strip phoneNumber for female users (safety feature)
+        const sanitizedRequests = requests.map(req => {
+            const obj = req.toObject();
+            if (obj.requestedItemOwner && obj.requestedItemOwner.gender === 'female') {
+                delete obj.requestedItemOwner.phoneNumber;
+            }
+            return obj;
+        });
+
         res.json({
             success: true,
-            count: requests.length,
-            data: requests
+            count: sanitizedRequests.length,
+            data: sanitizedRequests
         });
     } catch (error) {
         console.error('Get sent requests error:', error);
@@ -175,15 +193,24 @@ router.put('/:id/accept', protect, async (req, res) => {
         await exchangeRequest.save();
 
         const populatedRequest = await ExchangeRequest.findById(exchangeRequest._id)
-            .populate('requester', 'name email')
+            .populate('requester', 'name email phoneNumber gender')
             .populate('requestedItem')
             .populate('offeredItem')
-            .populate('requestedItemOwner', 'name email');
+            .populate('requestedItemOwner', 'name email phoneNumber gender');
+
+        // Strip phoneNumber for female users (safety feature)
+        const responseObj = populatedRequest.toObject();
+        if (responseObj.requester && responseObj.requester.gender === 'female') {
+            delete responseObj.requester.phoneNumber;
+        }
+        if (responseObj.requestedItemOwner && responseObj.requestedItemOwner.gender === 'female') {
+            delete responseObj.requestedItemOwner.phoneNumber;
+        }
 
         res.json({
             success: true,
             message: 'Exchange request accepted! Both items have been marked as exchanged.',
-            data: populatedRequest
+            data: responseObj
         });
     } catch (error) {
         console.error('Accept exchange request error:', error);

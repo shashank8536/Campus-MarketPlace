@@ -9,7 +9,7 @@ const { sendVerificationEmail } = require('../utils/emailService');
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password, campusId } = req.body;
+        const { name, email, password, campusId, gender } = req.body;
 
         // Verify campus email domain
         if (!email.toLowerCase().endsWith('@gla.ac.in')) {
@@ -31,6 +31,7 @@ router.post('/register', async (req, res) => {
             email,
             password,
             campusId,
+            gender,
             isEmailVerified: false
         });
 
@@ -105,7 +106,9 @@ router.post('/login', async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                campusId: user.campusId
+                campusId: user.campusId,
+                gender: user.gender,
+                phoneNumber: user.phoneNumber
             }
         });
     } catch (error) {
@@ -223,7 +226,9 @@ router.get('/me', protect, async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                campusId: user.campusId
+                campusId: user.campusId,
+                gender: user.gender,
+                phoneNumber: user.phoneNumber
             }
         });
     } catch (error) {
@@ -259,6 +264,7 @@ router.put('/profile', protect, async (req, res) => {
                 name: user.name,
                 email: user.email,
                 campusId: user.campusId,
+                gender: user.gender,
                 phoneNumber: user.phoneNumber
             }
         });

@@ -10,6 +10,7 @@ const Register = () => {
         password: '',
         confirmPassword: '',
         campusId: '',
+        gender: '',
         phoneNumber: ''
     });
     const [error, setError] = useState('');
@@ -41,10 +42,15 @@ const Register = () => {
             return;
         }
 
+        if (!formData.gender) {
+            setError('Please select your gender');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            await register(formData.name, formData.email, formData.password, formData.campusId, formData.phoneNumber);
+            await register(formData.name, formData.email, formData.password, formData.campusId, formData.phoneNumber, formData.gender);
             // After registration, navigate to verification pending page
             navigate('/verification-pending', { state: { email: formData.email } });
         } catch (err) {
@@ -103,6 +109,27 @@ const Register = () => {
                             required
                             placeholder="Your student/staff ID"
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="gender">Gender *</label>
+                        <select
+                            id="gender"
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                        {formData.gender === 'female' && (
+                            <small className="form-hint" style={{color: '#10b981'}}>
+                                🛡️ Your phone number will be hidden from others for your safety
+                            </small>
+                        )}
                     </div>
 
                     <div className="form-group">

@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
         const [total, listings] = await Promise.all([
             Listing.countDocuments(query),
             Listing.find(query)
-                .populate('seller', 'name email campusId')
+                .populate('seller', 'name email campusId gender')
                 .sort(sort)
                 .skip(skip)
                 .limit(limitNum)
@@ -102,13 +102,19 @@ router.get('/:id', async (req, res) => {
             req.params.id,
             { $inc: { viewCount: 1 } },
             { new: true }
-        ).populate('seller', 'name email campusId phoneNumber');
+        ).populate('seller', 'name email campusId phoneNumber gender');
 
         if (!listing) {
             return res.status(404).json({ success: false, message: 'Listing not found' });
         }
 
-        res.json({ success: true, data: listing });
+        // Strip phoneNumber for female sellers (safety feature)
+        const listingObj = listing.toObject();
+        if (listingObj.seller && listingObj.seller.gender === 'female') {
+            delete listingObj.seller.phoneNumber;
+        }
+
+        res.json({ success: true, data: listingObj });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
@@ -131,15 +137,19 @@ router.get('/user/:userId', async (req, res) => {
             isActive: true
         }).sort({ createdAt: -1 });
 
+        // Strip phoneNumber for female users (safety feature)
+        const userResponse = {
+            name: user.name,
+            email: user.email,
+            campusId: user.campusId,
+            phoneNumber: user.gender === 'female' ? undefined : user.phoneNumber,
+            gender: user.gender,
+            createdAt: user.createdAt
+        };
+
         res.json({
             success: true,
-            user: {
-                name: user.name,
-                email: user.email,
-                campusId: user.campusId,
-                phoneNumber: user.phoneNumber,
-                createdAt: user.createdAt
-            },
+            user: userResponse,
             listings,
             listingCount: listings.length
         });
@@ -256,7 +266,7 @@ router.put('/:id', protect, async (req, res) => {
                 status: status || listing.status
             },
             { new: true, runValidators: true }
-        ).populate('seller', 'name email campusId phoneNumber');
+        ).populate('seller', 'name email campusId phoneNumber gender');
 
         res.json({ success: true, data: listing });
     } catch (error) {

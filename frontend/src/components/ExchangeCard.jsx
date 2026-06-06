@@ -161,6 +161,29 @@ const ExchangeCard = ({ request, viewType, onAccept, onReject, onCancel, onRevie
                             ✨ Exchange accepted on {new Date(request.respondedAt).toLocaleDateString()}
                         </div>
                     )}
+
+                    <div className="contact-details-section">
+                        <h4>📋 Contact Details</h4>
+                        <div className="contact-info-exchange">
+                            {otherUser?.email && (
+                                <div className="contact-item-exchange">
+                                    <span className="contact-label">📧 Email:</span>
+                                    <a href={`mailto:${otherUser.email}`}>{otherUser.email}</a>
+                                </div>
+                            )}
+                            {otherUser?.phoneNumber ? (
+                                <div className="contact-item-exchange">
+                                    <span className="contact-label">📞 Phone:</span>
+                                    <a href={`tel:${otherUser.phoneNumber}`}>{otherUser.phoneNumber}</a>
+                                </div>
+                            ) : (
+                                <div className="contact-item-exchange privacy-note">
+                                    <span>🛡️ Phone number hidden for safety — use email or in-app chat</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {onReview && (
                         <div className="exchange-actions">
                             <button
