@@ -1,15 +1,16 @@
 # Campus Marketplace 🎓
 
-A modern, full-stack web application that enables college students to **buy**, **sell**, and **exchange** items within their campus community.
+A modern, full-stack web application that enables college students to **buy**, **sell**, and **exchange** items within their campus community. Built with a focus on trust, real-time engagement, and user safety.
 
-## ✨ Features
+## ✨ Key Features
 
-- **🛍️ Buy** - Browse items available for purchase
-- **💰 Sell** - List items you want to sell
-- **🔄 Exchange** - Trade items with other students
-- **🔍 Search & Filter** - Find items by keyword and type
-- **🔐 Campus Authentication** - Secure login with campus ID verification
-- **📱 Responsive Design** - Works seamlessly on mobile and desktop
+- **🛍️ Buy & Sell** - Browse and list items available for purchase with support for multiple image uploads.
+- **🔄 Barter / Exchange Engine** - A dedicated engine for proposing trades. Users can bid their own active items in exchange for others. Includes a transaction state machine that automatically links items when a trade is accepted.
+- **💬 Real-Time Chat** - Integrated Socket.io messaging allows students to negotiate and discuss listings instantly. Includes unread message counts and online notifications.
+- **🔐 Closed-Loop Campus Trust** - Registration is strictly limited to university students via `@gla.ac.in` email domain validation, backed by an active email verification lifecycle using Nodemailer.
+- **⭐ Reviews & Ratings** - A post-transaction review system. Users can rate buyers/sellers, and average ratings are dynamically calculated using MongoDB aggregation pipelines.
+- **🛡️ Gender-Based Privacy System** - Safety-first design: phone numbers of female users are strictly hidden server-side from all other users. Contact is restricted to email and in-app chat for privacy.
+- **📱 Premium Mobile-First UI** - Modern glassmorphism, gradient designs, and responsive layouts built without heavy UI frameworks.
 
 ## 🚀 Tech Stack
 
@@ -17,51 +18,39 @@ A modern, full-stack web application that enables college students to **buy**, *
 - **React** - UI library
 - **Vite** - Build tool
 - **React Router** - Navigation
-- **Modern CSS** - Glassmorphism & gradient design
+- **Socket.io-client** - Real-time bidirectional event-based communication
+- **Modern CSS** - Custom styling, glassmorphism & gradient design
 
 ### Backend
 - **Node.js** - Runtime environment
 - **Express** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM
+- **MongoDB & Mongoose** - Database and ODM
+- **Socket.io** - Real-time chat backend with authenticated sessions
+- **Multer** - Multipart/form-data middleware for image uploads
+- **Nodemailer** - SMTP email service for verification tokens
 - **bcryptjs** - Password hashing
-- **express-session** - Session management
+- **express-session & connect-mongo** - Persistent session management
 
 ## 📁 Project Structure
 
 ```
 campus-marketplace/
 ├── backend/
-│   ├── config/
-│   │   └── db.js              # MongoDB connection
-│   ├── middleware/
-│   │   └── auth.js            # Authentication middleware
-│   ├── models/
-│   │   ├── User.js            # User schema
-│   │   └── Listing.js         # Listing schema
-│   ├── routes/
-│   │   ├── auth.js            # Auth endpoints
-│   │   └── listings.js        # Listing CRUD endpoints
-│   ├── .env.example           # Environment variables template
-│   ├── package.json
-│   └── server.js              # Express server
+│   ├── config/              # MongoDB connection
+│   ├── middleware/          # Auth and Upload (Multer) middleware
+│   ├── models/              # Mongoose schemas (User, Listing, Message, ExchangeRequest, Review)
+│   ├── routes/              # Express API endpoints
+│   ├── utils/               # Nodemailer email service
+│   ├── server.js            # Express & Socket.io server entry point
+│   └── package.json
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── ListingCard.jsx
-│   │   │   └── PostItemForm.jsx
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   └── MyListings.jsx
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
+│   │   ├── components/      # Reusable UI components (Navbar, ExchangeCard, ChatWidget, etc.)
+│   │   ├── context/         # React Contexts (AuthContext, SocketContext)
+│   │   ├── pages/           # Route views (Home, Profile, ListingDetails, etc.)
+│   │   ├── App.jsx          # Main application routing
+│   │   └── main.jsx         # React DOM entry
 │   ├── package.json
 │   └── vite.config.js
 │
@@ -73,10 +62,11 @@ campus-marketplace/
 ### Prerequisites
 - **Node.js** (v14 or higher)
 - **MongoDB** (running locally OR MongoDB Atlas account)
-- **npm** or **yarn**
+- **SMTP Account** (e.g., Gmail App Password) for sending emails
 
-### Step 1: Clone/Navigate to Project
+### Step 1: Clone the Project
 ```bash
+git clone https://github.com/shashank8536/Campus-MarketPlace.git
 cd campus-marketplace
 ```
 
@@ -89,18 +79,29 @@ cd backend
 # Install dependencies
 npm install
 
-# Create .env file from example
-copy .env.example .env
-
-# Edit .env file with your MongoDB connection string
-# For local MongoDB: mongodb://localhost:27017/campus-marketplace
-# For MongoDB Atlas: your connection string
-
-# Start the backend server
-npm run dev
+# Create .env file
+cp .env.example .env
 ```
 
-Backend will run on **http://localhost:5000**
+**Configure `.env` in backend:**
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/campus-marketplace
+SESSION_SECRET=your_super_secret_session_key
+FRONTEND_URL=http://localhost:5173
+
+# Email Config (Gmail example)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM_NAME=Campus Marketplace
+```
+
+Start the backend:
+```bash
+npm run dev
+```
 
 ### Step 3: Frontend Setup
 
@@ -119,208 +120,27 @@ npm run dev
 
 Frontend will run on **http://localhost:5173**
 
-### Step 4: MongoDB Setup
 
-**Option A: Local MongoDB**
-- Ensure MongoDB is installed and running on your machine
-- No additional configuration needed if using default port 27017
+## 🗄️ Database Schema Overview
 
-**Option B: MongoDB Atlas (Cloud)**
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new cluster
-3. Get your connection string
-4. Replace `MONGODB_URI` in `.env` file
-
-## 📚 API Documentation
-
-### Authentication Endpoints
-
-#### Register User
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@campus.edu",
-  "password": "password123",
-  "campusId": "CS2024001"
-}
-```
-
-#### Login
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "john@campus.edu",
-  "password": "password123"
-}
-```
-
-#### Get Current User
-```http
-GET /api/auth/me
-```
-
-#### Logout
-```http
-POST /api/auth/logout
-```
-
-### Listing Endpoints
-
-#### Get All Listings
-```http
-GET /api/listings
-GET /api/listings?type=sell
-GET /api/listings?search=laptop
-```
-
-#### Get My Listings
-```http
-GET /api/listings/my
-```
-
-#### Create Listing
-```http
-POST /api/listings
-Content-Type: application/json
-
-{
-  "title": "iPhone 13 Pro",
-  "description": "Excellent condition, 128GB",
-  "type": "sell",
-  "price": 45000,
-  "category": "Electronics",
-  "imageUrl": "https://example.com/image.jpg"
-}
-```
-
-#### Update Listing
-```http
-PUT /api/listings/:id
-Content-Type: application/json
-
-{
-  "title": "Updated Title",
-  "price": 40000
-}
-```
-
-#### Delete Listing
-```http
-DELETE /api/listings/:id
-```
-
-## 🗄️ Database Schema
-
-### User Schema
-```javascript
-{
-  name: String (required),
-  email: String (required, unique),
-  password: String (required, hashed),
-  campusId: String (required),
-  timestamps: true
-}
-```
-
-### Listing Schema
-```javascript
-{
-  title: String (required, max 100 chars),
-  description: String (required, max 500 chars),
-  type: String (enum: 'buy', 'sell', 'exchange'),
-  price: Number (optional for exchange),
-  category: String (enum: Electronics, Books, Clothing, etc.),
-  imageUrl: String (default placeholder),
-  seller: ObjectId (ref: User),
-  isActive: Boolean (default: true),
-  timestamps: true
-}
-```
-
-## 🎨 Features Breakdown
-
-### User Features
-- ✅ Register with campus ID
-- ✅ Secure login/logout
-- ✅ Session persistence
-
-### Listing Features
-- ✅ Create listings (Buy/Sell/Exchange)
-- ✅ Edit own listings
-- ✅ Delete own listings
-- ✅ View all active listings
-- ✅ Filter by type (Buy/Sell/Exchange)
-- ✅ Search by keywords
-
-### UI Features
-- ✅ Modern gradient design
-- ✅ Glassmorphism effects
-- ✅ Smooth animations
-- ✅ Hover effects
-- ✅ Fully responsive
-- ✅ Mobile-friendly navigation
+- **User**: Name, Email (verified), Password (hashed), Campus ID, Gender, Phone Number, Ratings.
+- **Listing**: Title, Description, Type (buy/sell/exchange), Price, Category, Images, Status, Seller.
+- **ExchangeRequest**: Requester, RequestedItem, OfferedItem, Status, Messages.
+- **Message**: Sender, Receiver, Listing, Content, Read status.
+- **Review**: Reviewer, Reviewee, Listing, Rating, Comment.
 
 ## 🔐 Security Features
 
-- Password hashing with bcryptjs
-- Session-based authentication
-- Protected API routes
-- CORS configuration
-- Input validation
-
-## 🌐 Environment Variables
-
-Create a `.env` file in the `backend` directory:
-
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/campus-marketplace
-SESSION_SECRET=your_super_secret_session_key_change_this
-NODE_ENV=development
-```
-
-## 🧪 Testing the Application
-
-1. **Register a new user** with campus ID
-2. **Login** with credentials
-3. **Post an item** (try all types: buy, sell, exchange)
-4. **Browse listings** on home page
-5. **Filter** by type using tabs
-6. **Search** for items
-7. **Edit/Delete** your own listings from "My Listings" page
-8. **Logout** and verify session cleared
-
-## 📱 Screenshots
-
-The application features:
-- Hero section with gradient text
-- Filter tabs for Buy/Sell/Exchange
-- Card-based listing grid
-- Modal forms with animations
-- Responsive navbar
-
-## 🚧 Future Enhancements (Not Implemented)
-
-This is a hackathon-ready MVP. Possible future additions:
-- User profiles
-- Direct messaging
-- Image uploads
-- Email verification
-- Rating system
-- Transaction history
-
-## 📝 License
-
-MIT License - Free to use for educational purposes
+- Passwords hashed using `bcryptjs`.
+- Session-based authentication stored securely in MongoDB via `connect-mongo`.
+- Socket.io connections authenticated via shared session middleware.
+- API endpoints protected by auth middleware.
+- Server-side stripping of sensitive fields (e.g., hiding female users' phone numbers at the API level).
+- Strict email domain validation for exclusive campus access.
 
 ## 👨‍💻 Author
 
-Built for campus marketplace demo
+Built for campus marketplace demo by **Shashank Shekhar**.
 
 ---
 
